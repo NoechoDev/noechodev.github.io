@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NoEcho GameDev — Android apps and games, including 2048 Evolution and DeviceProof.">
+  <meta name="theme-color" content="#0b1020">
+  <title>NoEcho GameDev</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d18;
+      --card: rgba(17, 24, 43, .92);
+      --card-2: rgba(13, 19, 34, .92);
+      --text: #f7f9ff;
+      --muted: #aeb8d0;
+      --accent: #49dcff;
+      --accent-2: #8b6cff;
+      --green: #58e7b3;
+      --line: rgba(255,255,255,.10);
+      --shadow: 0 22px 70px rgba(0,0,0,.30);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 5%, rgba(73,220,255,.13), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(139,108,255,.14), transparent 30%),
+        linear-gradient(180deg, #0a1020 0%, var(--bg) 48%, #070b14 100%);
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 64px 0 42px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 28px 0 42px;
+    }
+
+    .brandmark {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      font-weight: 900;
+      font-size: 25px;
+      letter-spacing: -.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 50px rgba(73,220,255,.18);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 7vw, 66px);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 18px auto 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 18px;
+      color: #dfe6fb;
+      letter-spacing: .01em;
+    }
+
+    .apps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 28px;
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      box-shadow: var(--shadow);
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      right: -95px;
+      top: -100px;
+      filter: blur(4px);
+      opacity: .16;
+      pointer-events: none;
+    }
+
+    .card.game::after {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .card.utility::after {
+      background: linear-gradient(135deg, var(--green), var(--accent));
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .app-icon {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 12px 30px rgba(0,0,0,.22);
+    }
+
+    .game .app-icon {
+      background:
+        linear-gradient(135deg, rgba(73,220,255,.95), rgba(139,108,255,.95));
+      color: #07101b;
+    }
+
+    .utility .app-icon {
+      background:
+        linear-gradient(135deg, rgba(88,231,179,.95), rgba(73,220,255,.95));
+      color: #07101b;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-top: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: #d9e3fb;
+      background: rgba(255,255,255,.035);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -.03em;
+    }
+
+    .desc {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+      display: grid;
+      gap: 10px;
+      color: #dce5fa;
+      font-size: 14px;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+
+    .features li::before {
+      content: "•";
+      color: var(--accent);
+      font-weight: 900;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 800;
+      border: 1px solid transparent;
+      transition: transform .16s ease, opacity .16s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      opacity: .96;
+    }
+
+    .button.primary {
+      color: #06101b;
+      background: linear-gradient(135deg, var(--accent), #8df2ff);
+    }
+
+    .utility .button.primary {
+      background: linear-gradient(135deg, var(--green), var(--accent));
+    }
+
+    .button.secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.035);
+      border-color: var(--line);
+    }
+
+    .about {
+      margin-top: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .about h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .about p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    footer {
+      margin-top: 28px;
+      padding: 22px 0 4px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { padding-top: 34px; }
+      .apps { grid-template-columns: 1fr; }
+      .card { min-height: unset; }
+      .hero { padding-top: 16px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="brandmark">NE</div>
+      <h1>NoEcho GameDev</h1>
+      <p>
+        Independent Android development focused on clean design, useful tools
+        and simple games with polished mechanics.
+      </p>
+    </header>
+
+    <h3 class="section-title">Apps & Games</h3>
+
+    <section class="apps">
+      <article class="card game">
+        <div class="topline">
+          <div class="app-icon">2048</div>
+          <div>
+            <h2>2048 Evolution</h2>
+            <div class="badge">Available on Google Play</div>
+          </div>
+        </div>
+
+        <p class="desc">
+          A modern take on the classic 2048 puzzle with extra mechanics,
+          visual themes and optional power-ups.
+        </p>
+
+        <ul class="features">
+          <li>Time Tokens with rewind up to 5 moves</li>
+          <li>Quantum Cubes for selective tile merging</li>
+          <li>Multiple visual themes</li>
+          <li>Rewarded ads and optional in-app purchases</li>
+        </ul>
+
+        <div class="actions">
+          <a class="button primary"
+             href="https://play.google.com/store/apps/details?id=com.noecho.game2048"
+             target="_blank"
+             rel="noopener noreferrer">
+            Google Play
+          </a>
+
+          <a class="button secondary"
+             href="https://noechodev.github.io/2048-evolution-privacy/"
+             target="_blank"
+             rel="noopener noreferrer">
+            Privacy Policy
+          </a>
+        </div>
+      </article>
+
+      <article class="card utility">
+        <div class="topline">
+          <div class="app-icon">DP</div>
+          <div>
+            <h2>DeviceProof</h2>
+            <div class="badge">Android · In development / testing</div>
+          </div>
+        </div>
+
+        <p class="desc">
+          A device diagnostics and verification app designed to quickly check
+          the condition and key functions of an Android smartphone.
+        </p>
+
+        <ul class="features">
+          <li>Display and touch testing</li>
+          <li>Battery, sensors and hardware checks</li>
+          <li>Camera, connectivity and device information</li>
+          <li>Useful for inspection, resale and repair workflows</li>
+        </ul>
+
+        <div class="actions">
+          <a class="button primary"
+             href="mailto:publicnoecho@gmail.com?subject=DeviceProof">
+            Contact / Support
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <section class="about">
+      <h3>About NoEcho</h3>
+      <p>
+        NoEcho GameDev develops Android apps and games with an emphasis on
+        practical functionality, straightforward interfaces and continuous improvement.
+      </p>
+    </section>
+
+    <footer>
+      © 2026 NoEcho GameDev ·
+      <a href="mailto:publicnoecho@gmail.com">publicnoecho@gmail.com</a>
+    </footer>
+  </main>
+</body>
+</html>
